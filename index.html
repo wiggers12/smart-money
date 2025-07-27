@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pixcom - Sorteio Pix Instagram!</title>
-    <!-- Manifest para PWA -->
-    <link rel="manifest" href="/manifest.json">
+    <!-- Manifest para PWA (referencia o próprio index.html como start_url) -->
+    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6W3sic2l6ZXMiOiIxOTJ4MTkyIiwic3JjIjoiL2ljb25zL2ljb24tMTkyeDE5Mi5wbmciLCJ0eXBlIjoiaW1hZ2UvcG5nIn0seyJzaXplcyI6IjUxMng1MTIiLCJzcmMiOiIvaWNvbnMvaWNvbi01MTJ4NTEyLnBuZyIsInR5cGUiOiJpbWFnZS9wbmcifV0sIm5hbWUiOiJQaXhjb20gU29ydGVpbyBQaXgiLCJzaG9ydF9uYW1lIjoiUGl4Y29tIiwiZGVzY3JpcHRpb24iOiJQYXJ0aWNpcGUgZG8gc29ydGVpbyBQaXggZG8gSW5zdGFncmFtISIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMWEyMDJjIiwidGhlbWVfY29sb3IiOiIjNDI5OWUxIn0=">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
@@ -115,7 +115,7 @@
         <button id="messageButton">Ok</button>
     </div>
 
-    <!-- Container principal que alterna entre as views -->
+    <!-- Main container that switches between views -->
     <div id="mainContainer" class="container">
         <!-- Public App View Section -->
         <div id="publicAppView">
@@ -249,7 +249,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Expõe o objeto 'auth' globalmente para acesso via console (para obter UID)
         window.firebaseAuth = auth; 
 
         // Elementos DOM Comuns
@@ -271,7 +270,7 @@
         const statusText = document.getElementById('statusText');
         const winnerSection = document.getElementById('winnerSection');
         const winnerHandle = document.getElementById('winnerHandle');
-        const accessAdminLink = document.getElementById('accessAdminLink'); // Link para Admin
+        const accessAdminLink = document.getElementById('accessAdminLink'); 
 
         // Elementos DOM do Painel de Administração
         const adminAppView = document.getElementById('adminAppView');
@@ -290,9 +289,9 @@
         const adminParticipantsTable = document.getElementById('adminParticipantsTable');
         const adminParticipantsTableBody = document.getElementById('adminParticipantsTableBody');
         const loadingAdminParticipants = document.getElementById('loadingAdminParticipants');
-        const backToPublicLink = document.getElementById('backToPublicLink'); // Link para Voltar ao Sorteio
+        const backToPublicLink = document.getElementById('backToPublicLink'); 
 
-        let userId = null; // ID do usuário atual
+        let userId = null; 
 
         /**
          * Gerencia a exibição das diferentes views (pública, login admin, painel admin).
@@ -303,18 +302,18 @@
             adminAppView.classList.add('hidden');
             authSection.classList.add('hidden');
             adminPanel.classList.add('hidden');
-            mainContainer.classList.remove('admin-view'); // Remove largura extra por padrão
+            mainContainer.classList.remove('admin-view'); 
 
             if (viewId === 'public') {
                 publicAppView.classList.remove('hidden');
             } else if (viewId === 'adminLogin') {
                 adminAppView.classList.remove('hidden');
                 authSection.classList.remove('hidden');
-                mainContainer.classList.add('admin-view'); // Adiciona largura extra para login
+                mainContainer.classList.add('admin-view'); 
             } else if (viewId === 'adminPanel') {
                 adminAppView.classList.remove('hidden');
                 adminPanel.classList.remove('hidden');
-                mainContainer.classList.add('admin-view'); // Adiciona largura extra para painel
+                mainContainer.classList.add('admin-view'); 
             }
         }
 
@@ -341,11 +340,10 @@
          */
         async function authenticateUser() {
             try {
-                // Se já houver um usuário autenticado (ex: admin logado), não autentica anonimamente
                 if (auth.currentUser && auth.currentUser.isAnonymous === false) {
                     userId = auth.currentUser.uid;
                     userIdDisplay.textContent = userId;
-                    return; // Já logado como admin, não precisa de anônimo
+                    return; 
                 }
                 await signInAnonymously(auth);
                 userId = auth.currentUser?.uid || crypto.randomUUID();
@@ -354,7 +352,7 @@
             } catch (error) {
                 console.error("Erro na autenticação Firebase:", error);
                 showMessageBox("Erro de Autenticação", "Não foi possível autenticar. Tente novamente mais tarde.");
-                userId = crypto.randomUUID(); // Fallback para um ID aleatório
+                userId = crypto.randomUUID(); 
                 userIdDisplay.textContent = userId;
             }
         }
@@ -439,8 +437,7 @@
                             winnerSection.classList.add('hidden');
                         }
                     } else {
-                        // Inicializa o status se não existir (assume aberto por padrão)
-                        setDoc(giveawayStatusRef, { isOpen: true, winnerHandle: null, winnerPixKey: null }); // Inicializa
+                        setDoc(giveawayStatusRef, { isOpen: true, winnerHandle: null, winnerPixKey: null }); 
                         statusText.textContent = 'Inscrições Abertas!';
                         statusText.classList.remove('text-red-400', 'text-purple-400');
                         statusText.classList.add('text-green-400');
@@ -455,7 +452,6 @@
                 });
 
 
-                // Listener para a lista de participantes
                 const participantsCollectionRef = collection(db, `artifacts/${firebaseConfig.projectId}/public/data/giveaway_participants`);
                 const q = query(participantsCollectionRef);
 
@@ -501,7 +497,6 @@
          * Carrega o status do sorteio e a lista de participantes para o painel admin.
          */
         async function loadAdminData() {
-            // Listener para o status do sorteio
             const giveawayStatusRef = doc(db, `artifacts/${firebaseConfig.projectId}/public/data/giveaway_status`, 'current');
             onSnapshot(giveawayStatusRef, (docSnap) => {
                 if (docSnap.exists()) {
@@ -544,7 +539,6 @@
                 adminStatusText.classList.add('text-red-400');
             });
 
-            // Listener para todos os participantes (incluindo chaves Pix)
             loadingAdminParticipants.classList.remove('hidden');
             adminParticipantsTable.classList.add('hidden');
             adminParticipantsTableBody.innerHTML = '';
@@ -587,7 +581,7 @@
             const giveawayStatusRef = doc(db, `artifacts/${firebaseConfig.projectId}/public/data/giveaway_status`, 'current');
             try {
                 const docSnap = await getDoc(giveawayStatusRef);
-                let currentStatus = true; // Assume aberto se não existir
+                let currentStatus = true; 
 
                 if (docSnap.exists()) {
                     currentStatus = docSnap.data().isOpen;
@@ -625,7 +619,7 @@
                     winnerHandle: winner.instagramHandle,
                     winnerPixKey: winner.pixKey,
                     timestampWinnerSelected: new Date(),
-                    isOpen: false // Encerra as inscrições ao sortear
+                    isOpen: false 
                 }, { merge: true });
 
                 showMessageBox("Vencedor Sorteado!", `O vencedor é: ${winner.instagramHandle}! A chave Pix foi registrada.`);
@@ -652,7 +646,6 @@
             try {
                 await signOut(auth);
                 showMessageBox("Logout Sucesso", "Você foi desconectado.");
-                // Ao deslogar, redireciona para a visão pública e autentica anonimamente
                 showView('public'); 
                 authenticateUser();
             } catch (error) {
@@ -662,38 +655,30 @@
         });
 
         // Gerenciamento de Views e Autenticação
-        // Esta função é chamada no carregamento da página e em mudanças de estado de autenticação
         function initializeAppView() {
-            const path = window.location.hash; // Pega o hash da URL (ex: #admin)
+            const path = window.location.hash; 
             if (path === '#admin') {
-                // Se a URL tem #admin, tenta mostrar a visão de login admin
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
-                        // Se já está logado, verifica se é o admin
                         if (user.uid === 'GKJgqQrvrEgMrRJrZBTgkbxINEw1') { // <-- SUBSTITUA PELO SEU UID DE ADMINISTRADOR REAL
                             showView('adminPanel');
                             loadAdminData();
                         } else {
-                            // Se é outro usuário logado, mas não o admin, volta para público
                             showView('public');
-                            authenticateUser(); // Autentica anonimamente
+                            authenticateUser(); 
                         }
                     } else {
-                        // Não logado, mostra a tela de login admin
                         showView('adminLogin');
                     }
                 });
             } else {
-                // Se não tem #admin, mostra a visão pública
                 showView('public');
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
-                        // Se já logado, usa o UID existente (anônimo ou admin)
                         userId = user.uid;
                         userIdDisplay.textContent = userId;
                         loadParticipants();
                     } else {
-                        // Não logado, autentica anonimamente para visão pública
                         authenticateUser();
                     }
                 });
@@ -701,8 +686,8 @@
         }
 
         // Event Listeners para botões
-        registerButton.addEventListener('click', registerParticipant); // Botão de registro na visão pública
-        loginButton.addEventListener('click', async () => { // Botão de login na visão admin
+        registerButton.addEventListener('click', registerParticipant); 
+        loginButton.addEventListener('click', async () => { 
             const email = adminEmailInput.value;
             const password = adminPasswordInput.value;
             try {
@@ -713,32 +698,31 @@
                 showMessageBox("Erro de Login", "Email ou senha incorretos.");
             }
         });
-        logoutButton.addEventListener('click', async () => { // Botão de logout na visão admin
+        logoutButton.addEventListener('click', async () => { 
             try {
                 await signOut(auth);
                 showMessageBox("Logout Sucesso", "Você foi desconectado.");
-                showView('public'); // Volta para a visão pública após logout
-                authenticateUser(); // Autentica anonimamente novamente
+                showView('public'); 
+                authenticateUser();
             } catch (error) {
                 console.error("Erro de Logout: ", error);
                 showMessageBox("Erro de Logout", "Não foi possível desconectar.");
             }
         });
-        toggleRegistrationButton.addEventListener('click', toggleRegistrationStatus); // Botão de alternar status no admin
-        selectWinnerButton.addEventListener('click', selectWinner); // Botão de sortear vencedor no admin
+        toggleRegistrationButton.addEventListener('click', toggleRegistrationStatus); 
+        selectWinnerButton.addEventListener('click', selectWinner); 
 
         // Navegação entre views
         accessAdminLink.addEventListener('click', (e) => {
-            e.preventDefault(); // Previne o comportamento padrão do link
-            window.location.hash = 'admin'; // Altera a URL para #admin
-            initializeAppView(); // Chama a função para mudar a view
+            e.preventDefault(); 
+            window.location.hash = 'admin'; 
+            initializeAppView(); 
         });
 
         backToPublicLink.addEventListener('click', (e) => {
-            e.preventDefault(); // Previne o comportamento padrão do link
-            window.location.hash = ''; // Remove o hash da URL
-            showView('public'); // Mostra a tela pública
-            // Se o admin estiver logado, desloga ao voltar para a visão pública
+            e.preventDefault(); 
+            window.location.hash = ''; 
+            showView('public'); 
             if (auth.currentUser && auth.currentUser.uid === 'GKJgqQrvrEgMrRJrZBTgkbxINEw1') { // <-- SUBSTITUA PELO SEU UID DE ADMINISTRADOR REAL
                 signOut(auth);
             }
@@ -751,7 +735,7 @@
         // Service Worker Registration (para PWA)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js') // Caminho para o service worker
+                navigator.serviceWorker.register('/service-worker.js') 
                     .then(registration => {
                         console.log('Service Worker registrado com sucesso:', registration);
                     })
