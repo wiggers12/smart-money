@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixcom - Sorteio Pix Instagram!</title>
-    <!-- Manifest para PWA (referencia o próprio index.html como start_url) -->
-    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6W3sic2l6ZXMiOiIxOTJ4MTkyIiwic3JjIjoiL2ljb25zL2ljb24tMTkyeDE5Mi5wbmciLCJ0eXBlIjoiaW1hZ2UvcG5nIn0seyJzaXplcyI6IjUxMng1MTIiLCJzcmMiOiIvaWNvbnMvaWNvbi01MTJ4NTEyLnBuZyIsInR5cGUiOiJpbWFnZS9wbmcifV0sIm5hbWUiOiJQaXhjb20gU29ydGVpbyBQaXgiLCJzaG9ydF9uYW1lIjoiUGl4Y29tIiwiZGVzY3JpcHRpb24iOiJQYXJ0aWNpcGUgZG8gc29ydGVpbyBQaXggZG8gSW5zdGFncmFtISIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMWEyMDJjIiwidGhlbWVfY29sb3IiOiIjNDI5OWUxIn0=">
+    <title>Pix.com - Sorteio Pix Instagram!</title>
+    <!-- ADICIONADO: A tag <base> é crucial para GitHub Pages de projeto -->
+    <base href="/smart-money/"> 
+    <!-- Manifest para PWA (AGORA COM start_url CORRETO PARA GITHUB PAGES) -->
+    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6W3sic2l6ZXMiOiIvYW1hcnQtbW9uZXkvaWNvbnMvaWNvbi0xOTJ4MTkucG5nIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic2l6ZXMiOiIvYW1hcnQtbW9uZXkvaWNvbnMvaWNvbi01MTJ4NTEyLnBuZyIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmciFX0sIm5hbWUiOiJQaXhjb20gU29ydGVpbyBQaXgiLCJzaG9ydF9uYW1lIjoiUGl4Y29tIiwiZGVzY3JpcHRpb24iOiJQYXJ0aWNpcGUgZG8gc29ydGVpbyBQaXggZG8gSW5zdGFncmFtISIsInN0YXJ0X3VybCI6Ii9zbWFydC1tb25leS8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMWEyMDJjIiwidGhlbWVfY29sb3IiOiIjNDI5OWUxIn0=">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
@@ -490,7 +492,7 @@
                 participantsList.innerHTML = '<li class="text-center text-red-400">Erro ao carregar participantes.</li>';
                 participantsList.classList.remove('hidden');
                 loadingParticipants.classList.add('hidden');
-            }
+            });
         }
 
         /**
@@ -735,7 +737,7 @@
         // Service Worker Registration (para PWA)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js') 
+                navigator.serviceWorker.register('service-worker.js') // Caminho para o service worker (removido o / inicial)
                     .then(registration => {
                         console.log('Service Worker registrado com sucesso:', registration);
                     })
